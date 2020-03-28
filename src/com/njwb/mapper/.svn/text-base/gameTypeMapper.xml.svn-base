@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace指向实体类 -->
+<mapper namespace="com.njwb.mapper.GameTypeMapper">
+	<!-- 公共分页模糊查询 -->
+	<sql id="vagueSelectGameTypeByPage">
+		select type_id as typeId,
+	           type_name as typeName,
+	           type_status as typeStatus,
+	           type_picture as typePicture,
+	           type_create_time as createTime,
+	           type_update_time as updateTime
+	      from t_game_type
+		<if test="typeName != null and typeStatus != null">
+		 where type_name like '%' || #{typeName} || '%'
+		   and type_status like '%' || #{typeStatus} || '%'
+		</if>
+		<if test="typeName == null and typeStatus != null">
+		 where type_status like '%' || #{typeStatus} || '%'
+		</if>
+		 order by typeId
+	</sql>
+	
+	<!-- 查询所有游戏类型 -->
+	<select id="selectAllGameTypes" resultType="GameType">
+		select type_id as typeId,
+	           type_name as typeName,
+	           type_status as typeStatus,
+	           type_picture as typePicture,
+	           type_create_time as createTime,
+	           type_update_time as updateTime
+	      from t_game_type
+	      order by typeId
+	</select>
+	
+	<!-- 根据参数模糊查询 -->
+	<select id="vagueSelectGameType" parameterType="map" resultType="GameType">
+		select *
+		  from (select t.*, rownum as rn
+		          from (
+						<!-- 应用公共的sql -->
+						<include refid="vagueSelectGameTypeByPage"></include>
+	              ) t) temp
+		 where rn between #{startIndex} and #{endIndex}
+	</select>
+	
+	<!-- 模糊查询总数 -->
+	<select id="vagueSelectCount" parameterType="map" resultType="int">
+		 select count(*) from (
+			 <!-- 应用公共的sql -->
+			 <include refid="vagueSelectGameTypeByPage"></include>
+		 ) t
+	</select>
+	
+	<!-- 根据名称查询 -->
+	<select id="selectGameTypeByName" parameterType="String" resultType="GameType">
+		select type_id as typeId,
+		        type_name as typeName,
+		        type_status as typeStatus,
+		        type_picture as typePicture,
+		        type_create_time as createTime,
+		        type_update_time as updateTime
+		  from t_game_type
+		 where type_name=#{value}
+	</select>
+	
+	<!-- 根据id查询 -->
+	<select id="selectGameTypeById" parameterType="int" resultType="GameType">
+		select type_id as typeId,
+		        type_name as typeName,
+		        type_status as typeStatus,
+		        type_picture as typePicture,
+		        type_create_time as createTime,
+		        type_update_time as updateTime
+		  from t_game_type
+		 where type_id=#{value}
+	</select>
+	
+	<!-- 根据id修改 -->
+	<update id="updateGameTypeById" parameterType="map">
+		update t_game_type
+    	   set type_name=#{typeName},type_status=#{typeStatus},type_update_time=sysdate
+    	 where type_id=#{typeId}
+	</update>
+	
+	<!-- 根据id删除 -->
+	<update id="deleteGameTypeById" parameterType="int">
+		delete from t_game_type where type_id = #{value}
+	</update>
+	
+	<!-- 新增游戏类型 -->
+	<insert id="addGameType" parameterType="GameType">
+		insert into t_game_type 
+		values (t_game_type_id_seq.nextval,
+				#{typeName},
+				#{typeStatus},
+				#{typePicture},
+				sysdate,
+				'')
+	</insert>
+</mapper>

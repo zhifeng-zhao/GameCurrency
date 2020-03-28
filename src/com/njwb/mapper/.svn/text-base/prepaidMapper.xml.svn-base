@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace指向实体类 -->
+<mapper namespace="com.njwb.mapper.PrepaidMapper">
+	<!-- 新增充值记录 -->
+	<insert id="addPrepaid" parameterType="Prepaid">
+		insert into t_prepaid
+			 values (t_prepaid_id_seq.nextval,
+			 		 #{prepUserId},
+			 		 #{prepCardId},
+			 		 #{createTime})
+	</insert>
+	
+	<!-- 根据用户id查询充值记录 -->
+	<select id="selectPrepaidByUserId" parameterType="int" resultType="Prepaid">
+		select prep_id as prepId,
+			   prep_user_id as prepUserId,
+			   prep_card_id as prepCardId,
+			   prep_create_time as createTime
+		  from t_prepaid
+		 where prep_user_id=#{value}
+	</select>
+</mapper>

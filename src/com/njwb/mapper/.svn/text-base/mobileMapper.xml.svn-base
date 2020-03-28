@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace指向实体类 -->
+<mapper namespace="com.njwb.mapper.MobileMapper">
+	<!-- 根据手机号段查询号段信息 -->
+	<select id="selectByNumber" parameterType="String" resultType="Mobile">
+		select mobile_id as mobileId,
+		       mobile_number as mobileNumber,
+	           mobile_area as mobileArea,
+	           mobile_type as mobileType,
+	           mobile_post_code as mobilePostCode
+		  from t_mobile
+		 where mobile_number=#{value}
+	</select>
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace指向实体类 -->
+<mapper namespace="com.njwb.mapper.ExpenseMapper">
+	<!-- 根据用户id和游戏id查找消费记录 -->
+	<select id="selectByUserAndGameId" parameterType="map" resultType="Expense">
+		select exp_id as expId,
+			   exp_user_id as expUserId,
+			   exp_game_id as expGameId,
+			   exp_monetary as expMonetary,
+			   exp_oprations as expOperations,
+			   exp_create_time as createTime,
+			   exp_update_time as updateTime,
+			   exp_downloads as expDownloads,
+			   exp_game_name as expGameName
+		  from t_expense
+		 where exp_user_id=#{expUserId}
+		   and exp_game_id=#{expGameId}
+		 order by expId desc
+	</select>
+	
+	<!-- 根据用户id和游戏id查找消费记录 -->
+	<select id="selectByUserId" parameterType="int" resultType="Expense">
+		select exp_id as expId,
+			   exp_user_id as expUserId,
+			   exp_game_id as expGameId,
+			   exp_monetary as expMonetary,
+			   exp_oprations as expOperations,
+			   exp_create_time as createTime,
+			   exp_update_time as updateTime,
+			   exp_downloads as expDownloads,
+			   exp_game_name as expGameName
+		  from t_expense
+		 where exp_user_id=#{value}
+		 order by expId desc
+	</select>
+	
+	<!-- 新增下载记录 -->
+	<insert id="addExpense" parameterType="Expense">
+		insert into t_expense
+			 values (t_expense_id_seq.nextval,
+			 		 #{expUserId},
+			 		 #{expGameId},
+			 		 #{expMonetary},
+			 		 #{expOperations},
+			 		 #{createTime},
+			 		 '',
+			 		 #{expDownloads},
+			 		 #{expGameName})
+	</insert>
+	
+	<!-- 更新下载记录 -->
+	<update id="updateExpense" parameterType="Expense">
+		update t_expense
+		   set exp_update_time=#{updateTime},
+		   	   exp_downloads=#{expDownloads}
+		 where exp_id=#{expId}
+	</update>
+</mapper>

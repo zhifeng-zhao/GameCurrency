@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/71/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl
+END
+ExpenseServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/71/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl/ExpenseServiceImpl.java
+END
+VertificationCodeServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 150
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl/VertificationCodeServiceImpl.java
+END
+UserServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/70/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl/UserServiceImpl.java
+END
+GameTypeServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl/GameTypeServiceImpl.java
+END
+PrepaidServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 140
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/67/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl/PrepaidServiceImpl.java
+END
+ProvinceServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl/ProvinceServiceImpl.java
+END
+CardServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/70/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl/CardServiceImpl.java
+END
+MobileServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/63/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl/MobileServiceImpl.java
+END
+GameServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl/GameServiceImpl.java
+END
+UserManagerServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 144
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl/UserManagerServiceImpl.java
+END
+ExchangeServiceImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 141
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/70/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/service/impl/ExchangeServiceImpl.java
+END

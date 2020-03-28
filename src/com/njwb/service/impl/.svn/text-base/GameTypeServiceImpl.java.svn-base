@@ -1,0 +1,54 @@
+package com.njwb.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.njwb.mapper.GameTypeMapper;
+import com.njwb.pojo.GameType;
+import com.njwb.service.GameTypeService;
+@Service("gameTypeService")
+public class GameTypeServiceImpl implements GameTypeService {
+
+	@Autowired
+	GameTypeMapper gameTypeMapper;
+	
+	public Integer vagueSelectCount(Map<String, Object> map) {
+		return gameTypeMapper.vagueSelectCount(map);
+	}
+
+	public List<GameType> vagueSelectGameType(Map<String, Object> map) {
+		return gameTypeMapper.vagueSelectGameType(map);
+	}
+
+	public List<GameType> selectGameTypeByName(String typeName) {
+		return gameTypeMapper.selectGameTypeByName(typeName);
+	}
+
+	@Transactional
+	public void updateGameTypeById(Map<String, Object> map) {
+		gameTypeMapper.updateGameTypeById(map);
+	}
+
+	@Transactional
+	public Integer deleteGameTypeById(Integer typeId) {
+		return gameTypeMapper.deleteGameTypeById(typeId);
+	}
+
+	@Transactional
+	public void addGameType(GameType gameType) {
+		gameTypeMapper.addGameType(gameType);
+	}
+
+	public GameType selectGameTypeById(int id) {
+		return gameTypeMapper.selectGameTypeById(id);
+	}
+
+	public List<GameType> selectAllGameTypes() {
+		return gameTypeMapper.selectAllGameTypes();
+	}
+
+}

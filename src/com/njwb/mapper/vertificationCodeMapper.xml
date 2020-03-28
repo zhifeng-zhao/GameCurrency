@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace指向实体类 -->
+<mapper namespace="com.njwb.mapper.VertificationCodeMapper">
+	<sql id="selectAll">
+		select vc_id as vcId,
+			   vc_phone as vcPhone,
+			   vc_code as vcCode,
+			   to_char(create_time,'yyyymmddhh24:mi:ss') as createTime
+		  from t_vertification_code_history
+	</sql>
+
+	<!-- 新增一条验证码记录 -->
+	<insert id="addHistory" parameterType="VertificationCode">
+		insert into t_vertification_code_history 
+			 values (t_code_history_id_seq.nextval,
+			 		 #{vcPhone},
+			 		 #{vcCode},
+			 		 #{createTime})
+	</insert>
+	
+	<!-- 查询所有验证码记录 -->
+	<select id="selectAllHistories" resultType="VertificationCode">
+		<include refid="selectAll"></include>
+		order by vcId desc
+	</select>
+	
+	<!-- 根据手机号和验证码获取创建时间 -->
+	<!-- 解决手机号和验证码的组合相同的情况，取最新一条数据 -->
+	<select id="selectCreateTimeByPhoneAndCode" resultType="java.util.Date" parameterType="map">
+		select create_time
+		  from t_vertification_code_history
+     	 where vc_phone=#{vcPhone} and vc_code=#{vcCode}
+		 order by vc_id desc
+	</select>
+</mapper>

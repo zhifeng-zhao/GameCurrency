@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace指向实体类 -->
+<mapper namespace="com.njwb.mapper.UserMapper">
+	<!-- 公共分页查询 -->
+	<sql id="selectUserByPage">
+		select user_id as userId,
+			   user_name as userName,
+			   user_phone as userPhone,
+			   user_status as userStatus,
+			   user_create_time as createTime 
+		  from t_user
+		  order by userId
+	</sql>
+	
+	<!-- 查询用户 -->
+	<select id="selectUser" resultType="User" parameterType="map">
+		select *
+		  from (select t.*, rownum as rn
+		          from (
+		          <!-- 应用公共的sql -->
+		          <include refid="selectUserByPage"></include>
+		          ) t) temp
+		 where rn between #{startIndex} and #{endIndex}
+	</select>
+	
+	<!-- 查询总数 -->
+	<select id="selectCount" resultType="int">
+		 select count(*) from (
+			 <!-- 应用公共的sql -->
+			 <include refid="selectUserByPage"></include>
+		 ) t
+	</select>
+	
+	<!-- 公共分页模糊查询 -->
+	<sql id="vagueSelectUserByPage">
+		select user_id as userId,
+			   user_name as userName,
+			   user_phone as userPhone,
+			   user_status as userStatus,
+			   user_create_time as createTime 
+		  from t_user
+		<if test="userName != null and userPhone != null">
+		 where user_name like '%' || #{userName} || '%'
+		   and user_phone like '%' || #{userPhone} || '%'
+		</if>
+		<if test="userName != null and userPhone == null">
+		 where user_name like '%' || #{userName} || '%'
+		</if>
+		<if test="userName == null and userPhone != null">
+		 where user_phone like '%' || #{userPhone} || '%'
+		</if>
+		 order by userId
+	</sql>
+	
+	<!-- 根据参数模糊查询 -->
+	<select id="vagueSelectUser" parameterType="map" resultType="User">
+		select *
+		  from (select t.*, rownum as rn
+		          from (
+						<!-- 应用公共的sql -->
+						<include refid="vagueSelectUserByPage"></include>
+	              ) t) temp
+		 where rn between #{startIndex} and #{endIndex}
+	</select>
+	
+	<!-- 模糊查询总数 -->
+	<select id="vagueSelectCount" parameterType="map" resultType="int">
+		 select count(*) from (
+			 <!-- 应用公共的sql -->
+			 <include refid="vagueSelectUserByPage"></include>
+		 ) t
+	</select>
+	
+	<!-- 根据id更新用户状态 -->
+	<update id="updateUserStatusById" parameterType="map">
+		update t_user set user_status = #{userStatus} where user_id = #{userId}
+	</update>
+	
+	<!-- 根据id更新用户余额 -->
+	<update id="updateUserMoneyById" parameterType="User">
+		update t_user set user_tariffe = #{userTariffe},
+						  user_currency = #{userCurrency} 
+				    where user_id = #{userId}
+	</update>
+	
+	<!-- 根据用户名查找 -->
+	<select id="selectByName" parameterType="String" resultType="User">
+		select user_id as userId,
+		       user_name as userName,
+		       user_sex as userSex,
+		       user_pwd as userPwd,
+		       user_birthday as userBirthday,
+		       user_phone as userPhone,
+		       user_tariffe as userTariffe,
+		       user_currency as userCurrency,
+		       user_status as userStatus,
+    	       user_create_time as createTime
+	      from t_user
+		 where user_name = #{value}
+	</select>
+	
+	<!-- 根据id查找 -->
+	<select id="selectById" parameterType="int" resultType="User">
+		select user_id as userId,
+		       user_name as userName,
+		       user_sex as userSex,
+		       user_pwd as userPwd,
+		       user_birthday as userBirthday,
+		       user_phone as userPhone,
+		       user_tariffe as userTariffe,
+		       user_currency as userCurrency,
+		       user_status as userStatus,
+    	       user_create_time as createTime
+	      from t_user
+		 where user_id = #{value}
+	</select>
+	
+	<!-- 新增用户 -->
+	<insert id="addUser" parameterType="User">
+		insert into t_user 
+		values (t_user_id_seq.nextval,
+				#{userName},
+				#{userSex},
+				#{userPwd},
+				#{userBirthday},
+				#{userPhone},
+				#{userTariffe},
+				#{userCurrency},
+				#{userStatus},
+				sysdate)
+	</insert>
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace指向实体类 -->
+<mapper namespace="com.njwb.mapper.ExchangeMapper">
+	<!-- 公共分页模糊查询 -->
+	<sql id="vagueSelectExchangeByPage">
+		select exchange_id as exchangeId,
+		       prov_name as provName,
+		       exchange_status as exchangeStatus,
+		       exchange_charge as exchangeCharge,
+		       exchange_create_time as createTime,
+		       exchange_update_time as updateTime
+		  from t_exchange,t_province
+		 where exchange_prov_id=prov_id
+		   and prov_name like '%' || #{provName} || '%'
+		 order by exchange_id
+	</sql>
+	
+	<!-- 根据参数模糊查询 -->
+	<select id="vagueSelectExchange" parameterType="map" resultType="map">
+		select *
+		  from (select t.*, rownum as rn
+		          from (
+						<!-- 应用公共的sql -->
+						<include refid="vagueSelectExchangeByPage"></include>
+	              ) t) temp
+		 where rn between #{startIndex} and #{endIndex}
+	</select>
+	
+	<!-- 模糊查询总数 -->
+	<select id="vagueSelectCount" parameterType="map" resultType="int">
+		 select count(*) from (
+			 <!-- 应用公共的sql -->
+			 <include refid="vagueSelectExchangeByPage"></include>
+		 ) t
+	</select>
+	
+	<!-- 查询所有有兑换规则的省份 -->
+	<select id="selectProvs" resultType="map">
+		select exchange_id as exchangeId,
+		       prov_name as provName
+		  from t_exchange,t_province
+		 where exchange_prov_id=prov_id
+		 order by exchange_id
+	</select>
+	
+	<!-- 根据id删除 -->
+	<delete id="deleteExchangeById" parameterType="int">
+		delete from t_exchange
+		 where exchange_id=#{value}
+	</delete>
+	
+	<!-- 新增兑换规则 -->
+	<insert id="addExchange" parameterType="Exchange">
+		insert into t_exchange 
+		values (t_exchange_id_seq.nextval,
+				#{exchangeProvId},
+				#{exchangeStatus},
+				#{exchangeCharge},
+				sysdate,
+				'')
+	</insert>
+	
+	<!-- 根据id选择 -->
+	<select id="selectExchangeById" parameterType="int" resultType="map">
+		select exchange_id as exchangeId,
+		       prov_name as provName,
+		       exchange_status as exchangeStatus,
+		       exchange_charge as exchangeCharge,
+		       exchange_create_time as createTime,
+		       exchange_update_time as updateTime
+		  from t_exchange,t_province
+		 where exchange_prov_id=prov_id
+		   and exchange_id=#{value}
+	</select>
+	
+	<!-- 根据id修改 -->
+	<update id="updateExchangeById" parameterType="Exchange">
+		update t_exchange
+		   set exchange_status=#{exchangeStatus},
+		   	   exchange_charge=#{exchangeCharge}
+		 where exchange_id=#{exchangeId}
+	</update>
+	
+	<!-- 根据省份id查询兑换规则 -->
+	<select id="selectByProvId" parameterType="int" resultType="Exchange">
+		select exchange_id as exchangeId,
+		       exchange_prov_id as exchangeProvId,
+		       exchange_status as exchangeStatus,
+		       exchange_charge as exchangeCharge,
+		       exchange_create_time as createTime,
+		       exchange_update_time as updateTime
+		 from t_exchange
+		 where exchange_prov_id=#{value}
+	</select>
+</mapper>

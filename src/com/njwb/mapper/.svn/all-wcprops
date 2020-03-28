@@ -1,0 +1,137 @@
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/71/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper
+END
+PrepaidMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/67/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/PrepaidMapper.java
+END
+expenseMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/71/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/expenseMapper.xml
+END
+GameTypeMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/GameTypeMapper.java
+END
+UserMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/70/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/UserMapper.java
+END
+vertificationCodeMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/vertificationCodeMapper.xml
+END
+ExchangeMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/70/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/ExchangeMapper.java
+END
+mobileMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/63/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/mobileMapper.xml
+END
+userManagerMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/userManagerMapper.xml
+END
+exchangeMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/70/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/exchangeMapper.xml
+END
+MobileMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/63/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/MobileMapper.java
+END
+UserManagerMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/UserManagerMapper.java
+END
+userMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/70/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/userMapper.xml
+END
+VertificationCodeMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 139
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/VertificationCodeMapper.java
+END
+gameTypeMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/gameTypeMapper.xml
+END
+ExpenseMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/71/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/ExpenseMapper.java
+END
+prepaidMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 128
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/65/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/prepaidMapper.xml
+END
+provinceMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 129
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/provinceMapper.xml
+END
+cardMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/70/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/cardMapper.xml
+END
+gameMapper.xml
+K 25
+svn:wc:ra_dav:version-url
+V 125
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/gameMapper.xml
+END
+GameMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/GameMapper.java
+END
+CardMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/70/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/CardMapper.java
+END
+ProvinceMapper.java
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/%E4%B8%89%E9%98%B6%E6%AE%B5%E9%A1%B9%E7%9B%AE/!svn/ver/61/%E5%BC%A0%E6%96%87%E8%BD%A9/src/com/njwb/mapper/ProvinceMapper.java
+END

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace指向实体类 -->
+<mapper namespace="com.njwb.mapper.GameMapper">
+	<!-- 公共分页模糊查询 -->
+	<sql id="vagueSelectGameByPage">
+		select game_id as gameId,
+		       game_name as gameName,
+		       game_status as gameStatus,
+		       game_type as gameType,
+		       game_developers as gameDevelopers,
+		       game_introduction as gameIntroduction,
+		       game_detail as gameDetail,
+		       game_filing as gameFiling,
+		       game_cover as gameCover,
+		       game_screen as gameScreen,
+		       game_tariffe as gameTriffe,
+	           game_currency as gameCurrency,
+	           game_create_time as createTime,
+		       game_update_time as updateTime
+		  from t_game
+		 where game_name like '%' || #{gameName} || '%'
+		   and game_type like '%' || #{gameType} || '%'
+		 order by gameId
+	</sql>
+	
+	<!-- 根据参数模糊查询 -->
+	<select id="vagueSelectGame" parameterType="map" resultType="Game">
+		select *
+		  from (select t.*, rownum as rn
+		          from (
+						<!-- 应用公共的sql -->
+						<include refid="vagueSelectGameByPage"></include>
+	              ) t) temp
+		 where rn between #{startIndex} and #{endIndex}
+	</select>
+	
+	<!-- 模糊查询总数 -->
+	<select id="vagueSelectCount" parameterType="map" resultType="int">
+		 select count(*) from (
+			 <!-- 应用公共的sql -->
+			 <include refid="vagueSelectGameByPage"></include>
+		 ) t
+	</select>
+	
+	<!-- 根据游戏类型和游戏名称查询 -->
+	<select id="selectGameByTypeAndName" parameterType="map" resultType="Game">
+		<include refid="vagueSelectGameByPage"/>
+	</select>
+	
+	<!-- 根据id删除游戏 -->
+	<delete id="deleteGameById" parameterType="int">
+		delete from t_game where game_id = #{value}
+	</delete>
+	
+	<!-- 公共查询游戏 -->
+	<sql id="selectGame">
+		select game_id as gameId,
+		       game_name as gameName,
+		       game_status as gameStatus,
+		       game_type as gameType,
+		       game_developers as gameDevelopers,
+		       game_introduction as gameIntroduction,
+		       game_detail as gameDetail,
+		       game_filing as gameFiling,
+		       game_cover as gameCover,
+		       game_screen as gameScreen,
+		       game_tariffe as gameTriffe,
+	           game_currency as gameCurrency,
+	           game_create_time as createTime,
+		       game_update_time as updateTime
+		  from t_game
+	</sql>
+	
+	<!-- 查询所有游戏 -->
+	<select id="selectAllGames" resultType="Game">
+		<include refid="selectGame"></include>
+	</select>
+	
+	<!-- 新增游戏 -->
+	<insert id="addGame" parameterType="Game">
+		insert into t_game 
+		values (t_game_id_seq.nextval,
+				#{gameName},
+				#{gameStatus},
+				#{gameType},
+				#{gameDevelopers},
+				#{gameIntroduction},
+				#{gameDetail},
+				#{gameFiling},
+				#{gameCover},
+				#{gameScreen},
+				#{gameTriffe},
+				#{gameCurrency},
+				sysdate,
+				'')
+	</insert>
+	
+	
+	
+	<!-- 根据游戏名查询 -->
+	<select id="selectGameByName" parameterType="String" resultType="Game">
+		<include refid="selectGame"></include>
+		 where game_name = #{value}
+	</select>
+	
+	<!-- 根据id查询 -->
+	<select id="selectGameById" parameterType="int" resultType="Game">
+		<include refid="selectGame"></include>
+		where game_id = #{value}
+	</select>
+	
+	<!-- 根据id更新 -->
+	<update id="updateGameById" parameterType="Game">
+		update t_game 
+		   set game_name=#{gameName},
+		   	   game_status=#{gameStatus},
+		   	   game_type=#{gameType},
+		   	   game_developers=#{gameDevelopers},
+		   	   game_introduction=#{gameIntroduction},
+		   	   game_detail=#{gameDetail},
+		   	   game_filing=#{gameFiling},
+		   	   game_cover=#{gameCover},
+		   	   game_screen=#{gameScreen},
+		   	   game_tariffe=#{gameTriffe},
+		   	   game_currency=#{gameCurrency},
+		   	   game_update_time=sysdate
+		 where game_id=#{gameId}
+	</update>
+	
+</mapper>

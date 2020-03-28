@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace指向实体类 -->
+<mapper namespace="com.njwb.mapper.CardMapper">
+	<!-- 公共分页模糊查询 -->
+	<sql id="vagueSelectCardByPage">
+		select card_id as cardId,
+		       user_id as userId,
+		       card_number as cardNumber,
+		       card_pwd as cardPwd,
+		       card_amount as cardAmount,
+		       card_prov_id as cardProvId,
+		       card_start_time as cardStartTime,
+		       card_end_time as cardEndTime,
+		       card_status as cardStatus,
+	           card_create_time as createTime
+		  from t_card
+		 where card_number like '%' || #{cardNumber} || '%'
+		 <if test="cardProvId != 0">
+		   and card_prov_id = #{cardProvId}
+		 </if>
+		 <if test="cardStartTime != null and cardEndTime != null">
+		 	and to_char(card_start_time, 'yyyy-mm-dd') &gt;=#{cardStartTime}
+		 	and to_char(card_end_time, 'yyyy-mm-dd') &lt;=#{cardEndTime}
+		 </if>
+		 order by card_id
+	</sql>
+	
+	<!-- 根据参数模糊查询 -->
+	<select id="vagueSelectCard" parameterType="map" resultType="Card">
+		select *
+		  from (select t.*, rownum as rn
+		          from (
+						<!-- 应用公共的sql -->
+						<include refid="vagueSelectCardByPage"></include>
+	              ) t) temp
+		 where rn between #{startIndex} and #{endIndex}
+	</select>
+	
+	<!-- 模糊查询总数 -->
+	<select id="vagueSelectCount" parameterType="map" resultType="int">
+		 select count(*) from (
+			 <!-- 应用公共的sql -->
+			 <include refid="vagueSelectCardByPage"></include>
+		 ) t
+	</select>
+	
+	<!-- 新增密保卡 -->
+	<insert id="addCard" parameterType="Card">
+		insert into t_card 
+		values (t_card_id_seq.nextval,
+				0,
+				sys_guid(),
+				#{cardPwd},
+				#{cardAmount},
+				#{cardProvId},
+				#{cardStartTime},
+				#{cardEndTime},
+				#{cardStatus},
+				sysdate)
+	</insert>
+	
+	<!-- 根据密保卡卡号查询 -->
+	<select id="selectByCardNumber" parameterType="String" resultType="Card">
+		select card_id as cardId,
+		       user_id as userId,
+		       card_number as cardNumber,
+		       card_pwd as cardPwd,
+		       card_amount as cardAmount,
+		       card_prov_id as cardProvId,
+		       card_start_time as cardStartTime,
+		       card_end_time as cardEndTime,
+		       card_status as cardStatus,
+	           card_create_time as createTime
+		  from t_card
+		 where card_number=#{value}
+	</select>
+	
+	<!-- 根据id查询-->
+	<select id="selectById" resultType="Card" parameterType="int">
+		select card_id as cardId,
+		       user_id as userId,
+		       card_number as cardNumber,
+		       card_pwd as cardPwd,
+		       card_amount as cardAmount,
+		       card_prov_id as cardProvId,
+		       card_start_time as cardStartTime,
+		       card_end_time as cardEndTime,
+		       card_status as cardStatus,
+	           card_create_time as createTime
+		  from t_card
+		 where card_id=#{value}
+	</select>
+	
+	<!-- 根据卡号修改密保卡状态 -->
+	<update id="updateCardByNumber" parameterType="Card">
+		update t_card
+		   set user_id=#{userId},
+		   	   card_status=#{cardStatus}
+		 where card_number=#{cardNumber}
+	</update>
+	
+	<!-- 根据id修改额度 -->
+	<update id="updateAmountById" parameterType="Card">
+		update t_card
+		   set card_amount=#{cardAmount}
+		 where card_id=#{cardId}
+	</update>
+	
+	<!-- 查询所有密保卡 -->
+	<select id="selectAllCards" resultType="Card">
+		select card_id as cardId,
+		       user_id as userId,
+		       card_number as cardNumber,
+		       card_pwd as cardPwd,
+		       card_amount as cardAmount,
+		       card_prov_id as cardProvId,
+		       card_start_time as cardStartTime,
+		       card_end_time as cardEndTime,
+		       card_status as cardStatus,
+	           card_create_time as createTime
+		  from t_card
+	</select>
+	
+	<!-- 根据用户id查询卡 -->
+	<select id="selectByUserId" resultType="Card" parameterType="int">
+		select card_id as cardId,
+		       user_id as userId,
+		       card_number as cardNumber,
+		       card_pwd as cardPwd,
+		       card_amount as cardAmount,
+		       card_prov_id as cardProvId,
+		       card_start_time as cardStartTime,
+		       card_end_time as cardEndTime,
+		       card_status as cardStatus,
+	           card_create_time as createTime
+		  from t_card
+		 where user_id=#{value}
+	</select>
+	
+</mapper>

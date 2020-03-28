@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+       	   http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd 
+           http://www.springframework.org/schema/context 
+           http://www.springframework.org/schema/context/spring-context.xsd 
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop.xsd 
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- 开启注解 -->
+	<context:component-scan base-package="com.njwb">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+	</context:component-scan>
+
+	<!-- 数据源 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="jdbcUrl" value="jdbc:oracle:thin:@//10.0.24.98:1521/wb"></property>
+		<property name="driverClass" value="oracle.jdbc.driver.OracleDriver"></property>
+		<property name="user" value="zwx"></property>
+		<property name="password" value="zwx"></property>
+	</bean>
+
+	<!-- 配置mybatis的SqlSessionFactory -->
+	<bean name="factoryName" id="sqlSessionFactory"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- sqlMapConfig.xml配置文件的路径，文件名 -->
+		<property name="configLocation" value="classpath:sqlMapConfig.xml"></property>
+		<!-- 数据源对象 -->
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	<!-- mapper的批量配置 -->
+	<!-- 负责生成所有的mapper代理对象，然后将对象丢入核心容器中,key为接口的名称，第一个字母小写 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- session的工厂对象 -->
+		<property name="sqlSessionFactoryBeanName" value="factoryName"></property>
+		<!-- 哪个包需要生成mapper代理 -->
+		<property name="basePackage" value="com.njwb.mapper"></property>
+	</bean>
+
+	<!-- 事务管理对象 -->
+	<bean id="txManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<!-- 开启事务 -->
+	<tx:annotation-driven transaction-manager="txManager" />
+	
+	
+	<!-- 配置定时任务 -->
+	<!-- 1）配置job类的实例 -->
+	<bean id="jobs" class="org.springframework.scheduling.quartz.JobDetailBean">
+		<property name="jobClass">
+			<value>com.njwb.job.CardUpdateJob</value>
+		</property>
+		<!-- 配置依赖对象注入  --> 
+		<property name="jobDataAsMap">
+			<map>
+			 <!-- key,定时任务中的属性名
+				valueRef : beanID --> 
+			 
+				<entry key="cardService" value-ref="cardService" />
+			</map>
+		</property>
+	</bean>
+	 <!-- 2）配置job对应的触发器  --> 
+	<bean id="trigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="jobs" />
+		</property>
+		<property name="cronExpression">
+			<!-- 触发器时间
+			* * * * * ? 
+			秒  分  时  日  月  年	
+			0 0 2 * * ?  ==》每天的凌晨2点0分0秒	
+			0 0/5 * * * ? ==》没间隔5分钟 --> 
+			 
+			<value>0 0/5 * * * ?</value>
+		</property>
+	</bean>
+	<!-- 3）配置spring管理  -->
+	<bean id="start"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="trigger"/>
+			</list>
+		</property>
+	</bean>
+</beans>

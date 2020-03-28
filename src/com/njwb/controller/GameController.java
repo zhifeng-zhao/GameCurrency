@@ -1,0 +1,520 @@
+package com.njwb.controller;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
+
+import com.njwb.constant.SystemConstant;
+import com.njwb.pojo.Card;
+import com.njwb.pojo.Exchange;
+import com.njwb.pojo.Expense;
+import com.njwb.pojo.Game;
+import com.njwb.pojo.GameType;
+import com.njwb.pojo.Mobile;
+import com.njwb.pojo.User;
+import com.njwb.service.CardService;
+import com.njwb.service.ExchangeService;
+import com.njwb.service.ExpenseService;
+import com.njwb.service.GameService;
+import com.njwb.service.GameTypeService;
+import com.njwb.service.MobileService;
+import com.njwb.service.UserService;
+import com.njwb.util.SystemProperties;
+import com.njwb.util.SystemUtil;
+
+
+@RequestMapping("game")
+@Controller
+public class GameController {
+	private Logger log = Logger.getLogger(this.getClass());
+	
+	@Autowired
+	GameService gameService;
+	
+	@Autowired
+	GameTypeService gameTypeService;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	ExpenseService expenseService;
+	
+	@Autowired
+	MobileService mobileService;
+	
+	@Autowired
+	ExchangeService exchangeService;
+	
+	@Autowired
+	CardService cardService;
+	
+	@Autowired
+	HttpServletRequest request;
+	
+	/**
+	 * 分页模糊查询游戏
+	 * @param queryName
+	 * @param queryPhone
+	 * @param pageNo
+	 * @param pageSize
+	 * @return
+	 */
+	@RequestMapping("vagueSelectGames")
+	@ResponseBody
+	public String vagueSelectGames(String queryName, String queryType, Integer pageNo, Integer pageSize) {
+		log.info("分页模糊查询游戏");
+		Map<String, Object> map = new HashMap<String, Object>();
+		//TODO 参数合法性校验
+		pageNo = pageNo == null ? 1 : pageNo;
+		pageSize = pageSize == null ? 5 : pageSize;
+		//pageNo,pageSize不合法，给默认值
+		//pageNo的判断需要考虑，最小值，最大值
+		
+		map.put("gameName", queryName);
+		map.put("gameType", queryType);
+		
+		//计算总页数， 总数据量/每页显示数量
+		int count = gameService.vagueSelectCount(map);
+		int totalPage = count % pageSize > 0 ? count/pageSize + 1: count/pageSize;
+		
+		//分页，开始位置，结束位置
+		//页面传入参数，一般有两个，pageNo(页码),pageSize（每页显示数量）
+		int startIndex = (pageNo-1)*pageSize + 1;
+		int endIndex = pageNo * pageSize;
+		map.put("startIndex", startIndex);
+		map.put("endIndex", endIndex);
+		
+		List<Game> gameList = gameService.vagueSelectGame(map);
+		// 存储所有的类型信息
+		Map<Integer, String> allTypeMap = new HashMap<Integer, String>();
+		List<GameType> gameTypeList = gameTypeService.selectAllCommercialGameTypes();
+		for (GameType gameType : gameTypeList) {
+			allTypeMap.put(gameType.getTypeId(), gameType.getTypeName());
+		}
+		
+		// 存储typeId和对应的typeName
+		Map<Integer, String> typeMap = new HashMap<Integer, String>();
+		for (Game game : gameList) {
+			if (typeMap.containsKey(game.getGameType()) == false) {
+				typeMap.put(game.getGameType(), allTypeMap.get(game.getGameType()));
+			}
+		}
+		
+		//页面需要啥，给啥
+		request.getSession().setAttribute("allTypeMap", allTypeMap);
+		request.getSession().setAttribute("typeMap", typeMap);
+		request.getSession().setAttribute("gameList", gameList);
+		request.getSession().setAttribute("pageNo", pageNo);
+		request.getSession().setAttribute("totalPage", totalPage);
+		request.getSession().setAttribute("queryName", queryName);
+		request.getSession().setAttribute("queryType", queryType);
+		return "success";
+	}
+	
+	/**
+	 * 根据id删除游戏
+	 * @param gameId
+	 * @return
+	 */
+	@RequestMapping("delete")
+	@ResponseBody
+	public String delete(Integer gameId) {
+		log.info("根据id删除游戏");
+		gameService.deleteGameById(gameId);
+		return "success";
+	}
+	
+	/**
+	 * 新增游戏
+	 * @param gameCover
+	 * @param gameScreen1
+	 * @param gameScreen2
+	 * @param gameScreen3
+	 * @param gameName
+	 * @param gameStatus
+	 * @param gameType
+	 * @param gameDeveplopers
+	 * @param gameIntroduction
+	 * @param gameDetail
+	 * @param gameFiling
+	 * @param gameTriffe
+	 * @param gameCurrency
+	 * @return
+	 */
+	@RequestMapping("add")
+	@ResponseBody
+	public String add(@RequestParam("gameCover") CommonsMultipartFile gameCover, 
+			@RequestParam("gameScreen1") CommonsMultipartFile gameScreen1,
+			@RequestParam("gameScreen2") CommonsMultipartFile gameScreen2,
+			@RequestParam("gameScreen3") CommonsMultipartFile gameScreen3,
+			String gameName, Integer gameStatus, Integer gameType, String gameDevelopers,
+			String gameIntroduction, String gameDetail, String gameFiling, String gameTriffe,
+			String gameCurrency) {
+		log.info("添加游戏");
+		// 验证游戏名是否存在
+		if (gameService.selectGameByName(gameName) != null) {
+			return "game_name_exist";
+		}
+		// 金钱转换
+		BigDecimal bdGameTriffe = new BigDecimal(gameTriffe);
+		BigDecimal bdGameCurrency = new BigDecimal(gameCurrency);
+		//从配置文件中获取,key定义成常量
+		String path = SystemProperties.getValue(SystemConstant.UPLOAD_PATH);
+		String fileGameCover = gameCover.getOriginalFilename();
+		String fileGameScreen1 = gameScreen1.getOriginalFilename();
+		String fileGameScreen2 = gameScreen2.getOriginalFilename();
+		String fileGameScreen3 = gameScreen3.getOriginalFilename();
+
+		// 重命名：时间戳+原始文件名后缀
+		String newFileGameCover = SystemUtil.getDateString() + fileGameCover.split("\\.")[0] + fileGameCover.substring(fileGameCover.lastIndexOf("."));
+		String newFileGameScreen1 = SystemUtil.getDateString() + fileGameScreen1.split("\\.")[0] + fileGameScreen1.substring(fileGameScreen1.lastIndexOf("."));
+		String newFileGameScreen2 = SystemUtil.getDateString() + fileGameScreen2.split("\\.")[0] + fileGameScreen2.substring(fileGameScreen2.lastIndexOf("."));
+		String newFileGameScreen3 = SystemUtil.getDateString() + fileGameScreen3.split("\\.")[0] + fileGameScreen3.substring(fileGameScreen3.lastIndexOf("."));
+		String newFileScreens = newFileGameScreen1 + "|" + newFileGameScreen2 + "|" + newFileGameScreen3;
+		try {
+			// 文件复制到指定目录
+			gameCover.transferTo(new File(path + newFileGameCover));
+			gameScreen1.transferTo(new File(path + newFileGameScreen1));
+			gameScreen2.transferTo(new File(path + newFileGameScreen2));
+			gameScreen3.transferTo(new File(path + newFileGameScreen3));
+		} catch (IllegalStateException e) {
+			log.info("文件上传失败。" + gameType);
+		} catch (IOException e) {
+			log.info("文件上传失败。" + gameType);
+		}
+		GameType gameType2 = gameTypeService.selectGameTypeById(gameType);
+		if (gameType2.getTypeStatus() == 2 && gameStatus == 1) return "type_status_error";
+		Game game = new Game(0, gameName, gameStatus, gameType, gameDevelopers, gameIntroduction, gameDetail,
+				gameFiling, newFileGameCover, newFileScreens, bdGameTriffe, bdGameCurrency, new Date(), null);
+		gameService.addGame(game);
+		
+		return "success";
+	}
+	
+	/**
+	 * 获取详情
+	 * @param gameId
+	 * @return
+	 */
+	@RequestMapping("getDetail")
+	public String getDetail(Integer gameId ,String dest) {
+		if (dest.equals("details")) log.info("获取详情");
+		else log.info("修改带入");
+		Game game = gameService.selectGameById(gameId);
+		GameType gameType = gameTypeService.selectGameTypeById(game.getGameType());
+		String[] screens = game.getGameScreen().split("\\|");
+		List<GameType> typeList = gameTypeService.selectAllCommercialGameTypes();
+		request.getSession().setAttribute("game", game);
+		request.getSession().setAttribute("type", gameType.getTypeName());
+		request.getSession().setAttribute("typeList", typeList);
+		request.getSession().setAttribute("screen1", screens[0]);
+		request.getSession().setAttribute("screen2", screens[1]);
+		request.getSession().setAttribute("screen3", screens[2]);
+		if (dest.equals("details")) return "redirect:/game/gameDetails.jsp";
+		else return "redirect:/game/updateGame.jsp";
+	}
+	
+	/**
+	 * 用户获取游戏详情
+	 * @return
+	 */
+	@RequestMapping("userGetDetail")
+	public String userGetDetail(Integer gameId) {
+		log.info("用户获取游戏详情");
+		Game game = gameService.selectGameById(gameId);
+		GameType gameType = gameTypeService.selectGameTypeById(game.getGameType());
+		request.getSession().setAttribute("selectedGame", game);
+		request.getSession().setAttribute("selectedGameType", gameType.getTypeName());
+		return "redirect:/user/gameDetail.jsp";
+	}
+	
+	/**
+	 * 更新
+	 * @return
+	 */
+	@RequestMapping("update")
+	@ResponseBody
+	public String update(MultipartFile gameCover, MultipartFile gameScreen1, MultipartFile gameScreen2, MultipartFile gameScreen3,
+			String gameName, Integer gameStatus, Integer gameType, String gameDevelopers,
+			String gameIntroduction, String gameDetail, String gameFiling, String gameTriffe,
+			String gameCurrency, Integer gameId, String originGameName) {
+		log.info("修改游戏");
+		// 修改了游戏名
+		if (originGameName.equals(gameName) == false) {
+			// 重名判断
+			if (gameService.selectGameByName(gameName) != null) return "game_name_exist";
+		}
+		Game selectedGame = gameService.selectGameById(gameId);
+		
+		// 封面是否修改判断
+		if (gameCover != null) {
+			selectedGame.setGameCover(changedPictureValue(gameCover));
+		}
+		// 获取原始内容截图
+		String[] screens = selectedGame.getGameScreen().split("\\|");
+		String screen1 = screens[0];
+		String screen2 = screens[1];
+		String screen3 = screens[2];
+		// 截图是否修改
+		if (gameScreen1 != null) {
+			screen1 = changedPictureValue(gameScreen1);
+		}
+		if (gameScreen2 != null) {
+			screen2 = changedPictureValue(gameScreen2);
+		}
+		if (gameScreen3 != null) {
+			screen3 = changedPictureValue(gameScreen3);
+		}
+		GameType gameType2 = gameTypeService.selectGameTypeById(gameType);
+		if (gameType2.getTypeStatus() == 2 && gameStatus == 1) return "type_status_error";
+		String gameScreen = screen1 + "|" + screen2 + "|" + screen3;
+		selectedGame.setGameScreen(gameScreen);
+		selectedGame.setGameName(gameName);
+		selectedGame.setGameStatus(gameStatus);
+		selectedGame.setGameType(gameType);
+		selectedGame.setGameDevelopers(gameDevelopers);
+		selectedGame.setGameIntroduction(gameIntroduction);
+		selectedGame.setGameDetail(gameDetail);
+		selectedGame.setGameFiling(gameFiling);
+		selectedGame.setGameTriffe(new BigDecimal(gameTriffe));
+		selectedGame.setGameCurrency(new BigDecimal(gameCurrency));
+		gameService.updateGameById(selectedGame);
+		return "success";
+	}
+	
+	/**
+	 * 用户查询游戏
+	 * @param typeId
+	 * @param gameName
+	 * @return
+	 */
+	@RequestMapping("userQueryGame")
+	@ResponseBody
+	public String userQueryGame(Integer typeId, String gameName) {
+		log.info("用户查询游戏");
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("gameType", typeId);
+		map.put("gameName", gameName);
+		List<Game> queryGameList = gameService.selectGameByTypeAndName(map);
+		List<Game> resultList = new ArrayList<Game>();
+		for (Game game : queryGameList) {
+				if (game.getGameStatus() == 1) resultList.add(game);
+		}
+		
+		request.getSession().setAttribute("queryGameList", resultList);
+		return "success";
+	}
+	
+	/**
+	 * 用户下载游戏
+	 * @return
+	 */
+	@RequestMapping("download")
+	@ResponseBody
+	public String download(Integer userId, Integer gameId, Integer operation) {
+		log.info("用户下载游戏");
+		// 用户检验
+		User user = userService.selectById(userId);
+		if (user == null) return "user_not_exist";
+		else if (user.getUserStatus() == 2) return "user_status_banned";
+		// 查询游戏和用户对应的消费记录
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		map.put("expUserId", userId);
+		map.put("expGameId", gameId);
+		Expense expense = expenseService.selectByUserAndGameId(map);
+		Game game = gameService.selectGameById(gameId);
+		if (expense == null) {
+			return purchase(user, game, operation);
+		}else {
+			// 有相关记录
+			Date createTime = expense.getCreateTime();
+			Date updateTime = expense.getUpdateTime();
+			Date now = new Date();
+			if (updateTime == null) {
+				// 只下载过一次
+				// 计算小时差
+				int hours = (int) ((now.getTime() - createTime.getTime()) / (1000 * 60 * 60));
+				if (hours < 24) {
+					// 24小时内可下载
+					expense.setUpdateTime(now);
+					expense.setExpDownloads(2);
+					expenseService.updateExpense(expense);
+					return "second_download_success";
+				}else {
+					// 超过24小时不可下载
+					// 进入扣费流程
+					return purchase(user, game, operation);
+				}
+			}else {
+				// 下载过两次
+				int hours = (int) ((now.getTime() - updateTime.getTime()) / (1000 * 60 * 60));
+				Integer downloads = expense.getExpDownloads();
+				if (hours < 24 && downloads < 3) {
+					// 24小时以及3次下载条件满足
+					expense.setUpdateTime(now);
+					expense.setExpDownloads(++downloads);
+					expenseService.updateExpense(expense);
+					return "third_download_success";
+				}else {
+					// 不满足条件
+					return purchase(user, game, operation);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 购买游戏
+	 * @param user
+	 * @param game
+	 * @param operation
+	 * @return
+	 */
+	public String purchase(User user, Game game, Integer operation) {
+		// 没有相关记录
+		// 判断扣费方式
+		if (operation == 1) {
+			// 话费支付
+			// 1.话费不足
+			if (user.getUserTariffe().compareTo(game.getGameTriffe()) == -1) {
+				return "user_tariffe_error";
+			}else {
+				// 2.扣费
+				// 新增记录
+				greatExpense(user, game, operation);
+				// 获取用户所在地
+				Mobile mobile = mobileService.selectByNumber(user.getUserPhone().substring(3,7));
+				// 根据所在地查询兑换规则
+				Exchange exchange = exchangeService.selectByProvId(mobile.getMobilePostCode());
+				// 生成用户更新
+				user.setUserTariffe(user.getUserTariffe().subtract(game.getGameTriffe()));
+				if (exchange == null || exchange.getExchangeStatus() == 2) {
+					user.setUserCurrency(user.getUserCurrency().add(game.getGameTriffe()));
+				}
+				else {
+					user.setUserCurrency(user.getUserCurrency().add(game.getGameTriffe().multiply(new BigDecimal(exchange.getExchangeCharge()))));
+				}
+				// 用户更新
+				userService.updateUserMoneyById(user);
+				return "tariffe_purchase_success";
+			}
+		}else if(operation == 2) {
+			// 游币支付
+			// 获取用户密保额度
+			List<Card> cardList = cardService.selectByUserId(user.getUserId());
+			BigDecimal amount = new BigDecimal("0");
+			for (Card card : cardList) {
+				amount = amount.add(card.getCardAmount());
+			}
+			if (amount.compareTo(game.getGameCurrency()) == -1) {
+				// 密保额度不足，先扣密保，再扣游币
+				if (user.getUserCurrency().compareTo(game.getGameCurrency().subtract(amount)) == -1) {
+					if (user.getUserCurrency().compareTo(game.getGameCurrency()) == -1) {
+						// 游币不足
+						return "user_currency_error";
+					}else {
+						// 新增记录
+						greatExpense(user, game, operation);
+						// 扣游币
+						// 生成用户更新
+						user.setUserCurrency(user.getUserCurrency().subtract(game.getGameCurrency()));
+						// 用户更新
+						userService.updateUserMoneyById(user);
+						return "currency_purchase_success";
+					}					
+				}else {
+					for (Card card : cardList) {
+						card.setCardAmount(new BigDecimal("0"));
+						cardService.updateAmountById(card);
+					}
+					// 新增记录
+					greatExpense(user, game, operation);
+					// 扣游币
+					// 生成用户更新
+					user.setUserCurrency(user.getUserCurrency().subtract(game.getGameCurrency().subtract(amount)));
+					// 用户更新
+					userService.updateUserMoneyById(user);
+				}
+			}else {
+				// 待付款
+				BigDecimal total = game.getGameCurrency();
+				// 扣密保额度	
+				for (Card card : cardList) {
+					if (card.getCardAmount().compareTo(total) != -1) {
+						card.setCardAmount(card.getCardAmount().subtract(game.getGameCurrency()));
+						cardService.updateAmountById(card);
+						break;
+					}else if (card.getCardAmount().compareTo(total) == -1) {
+						total.subtract(card.getCardAmount());
+						card.setCardAmount(new BigDecimal("0"));
+						cardService.updateAmountById(card);
+					}
+				}
+				// 新增记录
+				greatExpense(user, game, operation);
+				return "card_purchase_success";
+			}
+		}
+		return "operation_error";
+	}
+	
+	/**
+	 * 生成消费记录
+	 * @param user
+	 * @param game
+	 * @param operation
+	 */
+	public void greatExpense(User user, Game game, Integer operation) {
+		Expense newExpense = new Expense();
+		newExpense.setExpUserId(user.getUserId());
+		newExpense.setExpGameId(game.getGameId());
+		if (operation == 1) {
+			newExpense.setExpMonetary(game.getGameTriffe());						
+		}else if(operation == 2) {
+			newExpense.setExpMonetary(game.getGameCurrency());			
+		}
+		newExpense.setExpOperations(operation);
+		newExpense.setCreateTime(new Date());
+		newExpense.setExpDownloads(1);
+		newExpense.setExpGameName(game.getGameName());
+		// 新增记录
+		expenseService.addExpense(newExpense);
+	}
+	
+	/**
+	 * 图片变化赋值
+	 * @param file
+	 * @return
+	 */
+	String changedPictureValue(MultipartFile file) {
+		String path = SystemProperties.getValue(SystemConstant.UPLOAD_PATH);
+		String newFile = SystemUtil.getDateString() + 
+		file.getOriginalFilename().split("\\.")[0] + 
+		file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+		try {
+			file.transferTo(new File(path + newFile));
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return newFile;
+	}
+}

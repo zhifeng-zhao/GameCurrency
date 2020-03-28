@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-module
+  type="WEB"
+  name="GameCurrency"
+  id="myeclipse.1578363535982"
+  context-root="/GameCurrency"
+  j2ee-spec="5.0"
+  archive="GameCurrency.war">
+  <attributes>
+    <attribute name="webrootdir" value="/WebRoot" />
+  </attributes>
+</project-module>
+
